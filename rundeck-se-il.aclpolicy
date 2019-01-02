@@ -1,0 +1,106 @@
+ 
+---
+by:
+  group: rundeck-se-il
+for:
+  project:
+  - allow: read
+description: generated
+
+
+
+
++ aclpolicy
+
+
+by:
+  group: rundeck-se-il
+context:
+  application: rundeck
+for:
+  project:
+  - allow:
+    - read
+    equals:
+      name: VMware
+description: application level access to project
+---
+---
+by:
+  group: rundeck-se-il
+context:
+  project: VMware
+for:
+  job:
+  - allow:
+    - view
+    - read
+    - run
+    - kill
+description: generated
+---
+by:
+  group: rundeck-se-il
+context:
+  application: rundeck
+for:
+  project:
+  - allow: read
+    equals:
+      name: VMware
+description: generated
+---
+
+description: User project level access control. Applies to resources within a specific project. Essentially read/run/kill/refresh.
+context:
+  project: 'VMware'
+for:
+  resource:
+ 
+    - equals:
+        kind: node
+      allow: [read,refresh]
+    - equals:
+        kind: event
+      allow: [read,create]
+    - equals:
+        kind: adhoc
+      allow: [read,run,kill]  
+  adhoc:
+    - allow: [read,run,kill]
+  job:
+    - match:
+         group: '^IL($|/.*)'
+      allow: [read,run,kill]
+  job:
+    - match:
+         name : 'US_Create_PoC_VM'
+      deny: read
+      
+  node:
+    - allow: [read,run,refresh]
+by:
+    group : 'rundeck-se-il'
+---
+---
+by:
+  group: rundeck-se-il
+context:
+  project: VMware
+for:
+  job:
+  - deny: '*'
+    equals:
+      group: 'US_Operations'
+description: prevent access to US jobs      
+---
+by:
+  group: rundeck-se-il
+context:
+  project: VMware
+for:
+  job:
+  - deny: '*'
+    equals:
+      group: 'Administrative'
+description: prevent access to Admin jobs   
